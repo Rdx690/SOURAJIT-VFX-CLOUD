@@ -1,9 +1,9 @@
 'use strict';
 const express=require('express'), session=require('express-session'), helmet=require('helmet'), multer=require('multer'), path=require('path'),fs=require('fs'),http=require('http'),crypto=require('crypto');
 const {WebSocketServer}=require('ws'),pty=require('node-pty');
-const PORT=Number(process.env.PORT||3000),PASSWORD=process.env.CLOUD_PASSWORD,SECRET=process.env.SESSION_SECRET,ROOT=path.resolve(process.env.WORKSPACE||'/workspace');
-if(!PASSWORD||PASSWORD.length<12)throw Error('CLOUD_PASSWORD must be at least 12 characters');
-if(!SECRET||SECRET.length<32)throw Error('SESSION_SECRET must be at least 32 characters');
+const PORT=Number(process.env.PORT||3000),PASSWORD=String(process.env.CLOUD_PASSWORD||process.env.CLOUD_PASS||process.env.PASSWORD||'').trim(),SECRET=String(process.env.SESSION_SECRET||'').trim(),ROOT=path.resolve(process.env.WORKSPACE_DIR||process.env.WORKSPACE||'/workspace');
+if(!PASSWORD||PASSWORD.length<8)throw Error('Set CLOUD_PASSWORD (or CLOUD_PASS/PASSWORD) to a value of at least 8 characters in Render Environment, then save changes and redeploy.');
+if(!SECRET||SECRET.length<32)throw Error('SESSION_SECRET must be at least 32 characters; set it in Render Environment and redeploy.');
 fs.mkdirSync(ROOT,{recursive:true});
 const app=express();app.disable('x-powered-by');app.set('trust proxy',1);
 app.use(helmet({contentSecurityPolicy:false,crossOriginEmbedderPolicy:false}));app.use(express.json({limit:'2mb'}));
